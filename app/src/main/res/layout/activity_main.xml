@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.ch15_myhotlin.MainActivity" >
+    tools:context="com.example.ch15_myhotlin.ContactActivity" >
 
     <ListView
         android:id="@+id/lv"
@@ -23,14 +23,14 @@
         android:layout_weight="0.07" >
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/txt_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Name : " />
 
         <EditText
-            android:id="@+id/etName"
+            android:id="@+id/edt_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,14 +49,14 @@
         android:layout_weight="0.07" >
 
         <TextView
-            android:id="@+id/phone"
+            android:id="@+id/txt_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Phone : " />
 
         <EditText
-            android:id="@+id/etPhone"
+            android:id="@+id/edt_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -72,14 +72,14 @@
         android:layout_weight="0.07" >
 
         <TextView
-            android:id="@+id/email"
+            android:id="@+id/txt_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Email : " />
 
         <EditText
-            android:id="@+id/etEmail"
+            android:id="@+id/edt_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -96,27 +96,27 @@
         android:layout_weight="0.07" >
 
         <Button
-            android:id="@+id/btInsert"
+            android:id="@+id/btn_insert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:onClick="InsertOrUpdate"
+            android:onClick="insertOrUpdate"
             android:text="Insert"
             android:textSize="10sp" />
 
         <Button
-            android:id="@+id/btUpdate"
+            android:id="@+id/btn_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:onClick="InsertOrUpdate"
+            android:onClick="insertOrUpdate"
             android:text="Update"
             android:textSize="10sp" />
 
         <Button
-            android:id="@+id/btDelete"
+            android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -126,7 +126,7 @@
             android:textSize="10sp" />
 
         <ImageButton
-            android:id="@+id/imageButton1"
+            android:id="@+id/ibtn_action_call"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -135,7 +135,7 @@
             android:src="@android:drawable/sym_action_call" />
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/ibtn_action_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
