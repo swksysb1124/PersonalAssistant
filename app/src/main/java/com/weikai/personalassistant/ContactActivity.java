@@ -15,6 +15,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.weikai.personalassistant.model.IContactStorageModel;
+import com.weikai.personalassistant.model.SQLiteModel;
+
 
 public class ContactActivity extends AppCompatActivity
         implements AdapterView.OnItemClickListener{
@@ -55,14 +58,14 @@ public class ContactActivity extends AppCompatActivity
     }
 
     private void initModel() {
-        contactStorageModel = new ContactStorageModel(this);
+        contactStorageModel = new SQLiteModel(this);
     }
 
     private void initCursorAdapter() {
         cursorAdapter = new SimpleCursorAdapter(this,
                 R.layout.contact_list_item,      // 自訂的layout
                 contactStorageModel.getCursor(),			                 // Cursor物件
-                ContactStorageModel.TABLE_FIELD_NAMES,				             // 欄位名稱陣列
+                SQLiteModel.TABLE_FIELD_NAMES,				             // 欄位名稱陣列
                 new int[] {R.id.txt_name, R.id.txt_phone, R.id.txt_email},	// TextView 資源ID
                 0);
     }
@@ -113,7 +116,7 @@ public class ContactActivity extends AppCompatActivity
             ibtnActionCall.setEnabled(false);
             ibtnActionEmail.setEnabled(false);
         }
-        if (cursor.getCount() == ContactStorageModel.DATA_COUNT_MAX) {                // 已達上限，停用Insert Button
+        if (cursor.getCount() == SQLiteModel.DATA_COUNT_MAX) {                // 已達上限，停用Insert Button
             btnInsert.setEnabled(false);
         } else {
             btnInsert.setEnabled(true);

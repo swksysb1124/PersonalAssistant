@@ -1,4 +1,4 @@
-package com.weikai.personalassistant;
+package com.weikai.personalassistant.model;
 
 import android.database.Cursor;
 import android.net.Uri;

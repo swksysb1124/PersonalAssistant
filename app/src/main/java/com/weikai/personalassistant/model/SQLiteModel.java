@@ -1,4 +1,4 @@
-package com.weikai.personalassistant;
+package com.weikai.personalassistant.model;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,9 +11,9 @@ import android.util.Log;
  * Created by suweikai on 2018/7/24.
  */
 
-public class ContactStorageModel implements IContactStorageModel {
+public class SQLiteModel implements IContactStorageModel {
 
-    private static final String TAG = ContactStorageModel.class.getSimpleName();
+    private static final String TAG = SQLiteModel.class.getSimpleName();
     private static final String DATABASE_NAME = "HotlinDB";	// 數據庫名稱
     private static final String TABLE_NAME = "hotlist";	// 數據表名稱
     public static final int DATA_COUNT_MAX = 8;	    // 通訊數據筆數上限
@@ -25,7 +25,7 @@ public class ContactStorageModel implements IContactStorageModel {
     private SQLiteDatabase mDatabase;
     private Cursor mCursor;
 
-    public ContactStorageModel(Context context) {
+    public SQLiteModel(Context context) {
         mContext = context.getApplicationContext();
         openOrCreateDatabase();
         openOrCreateTable();
@@ -42,13 +42,13 @@ public class ContactStorageModel implements IContactStorageModel {
             Log.e(TAG, "database not initialized yet");
             throw new IllegalStateException("database not initialized yet");
         }
-        String createTable =
+        String createTableSql =
                 "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name VARCHAR(32), " +
                 "phone VARCHAR(16), " +
                 "email VARCHAR(64))";
-        mDatabase.execSQL(createTable);// create a table
+        mDatabase.execSQL(createTableSql);// create a table
     }
 
     @Override
