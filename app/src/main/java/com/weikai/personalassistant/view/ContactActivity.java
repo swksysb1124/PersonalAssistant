@@ -1,12 +1,9 @@
-package com.weikai.personalassistant;
+package com.weikai.personalassistant.view;
 
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,15 +12,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import com.weikai.personalassistant.model.IContactStorageModel;
+import com.weikai.personalassistant.R;
 import com.weikai.personalassistant.model.SQLiteModel;
+import com.weikai.personalassistant.presenter.ContactPresenter;
 
 
 public class ContactActivity extends AppCompatActivity
-        implements AdapterView.OnItemClickListener{
+        implements AdapterView.OnItemClickListener, ContactView{
 
-    private static final String TAG = ContactActivity.class.getSimpleName();
-    private IContactStorageModel contactStorageModel;
+    private ContactPresenter contactPresenter;
     private SimpleCursorAdapter cursorAdapter;
     private EditText edtName, edtPhone, edtEmail;	//用來輸入姓名，電話，Email欄位
     private Button btnInsert, btnUpdate, btnDelete;
@@ -34,16 +31,23 @@ public class ContactActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        contactPresenter = new ContactPresenter(this, this);
         initViews();
-        initModel();
         initCursorAdapter();
         initContactListView();
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        contactPresenter.release();
+        contactPresenter = null;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        queryData();
+        contactPresenter.queryData();
     }
 
     private void initViews() {
@@ -57,16 +61,13 @@ public class ContactActivity extends AppCompatActivity
         ibtnActionEmail = (ImageButton) findViewById(R.id.ibtn_action_email);
     }
 
-    private void initModel() {
-        contactStorageModel = new SQLiteModel(this);
-    }
 
     private void initCursorAdapter() {
         cursorAdapter = new SimpleCursorAdapter(this,
-                R.layout.contact_list_item,      // 自訂的layout
-                contactStorageModel.getCursor(),			                 // Cursor物件
-                SQLiteModel.TABLE_FIELD_NAMES,				             // 欄位名稱陣列
-                new int[] {R.id.txt_name, R.id.txt_phone, R.id.txt_email},	// TextView 資源ID
+                R.layout.contact_list_item,                                     // 自訂的layout
+                contactPresenter.getCursor(),			                    // Cursor物件
+                SQLiteModel.TABLE_FIELD_NAMES,				                    // 欄位名稱陣列
+                new int[] {R.id.txt_name, R.id.txt_phone, R.id.txt_email},	    // TextView 資源ID
                 0);
     }
 
@@ -85,32 +86,16 @@ public class ContactActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void addData(String name, String phone,String email){
-        contactStorageModel.add(name, phone, email);
-    }
-
-    private void updateData(String name, String phone, String email, int id){
-        contactStorageModel.update(id, name, phone, email);
-    }
-
-    private void queryData() {
-        contactStorageModel.query(new IContactStorageModel.OnCursorUpdateCallback() {
-            @Override
-            public void onUpdate(Cursor cursor) {
-                updateCursorAdapter(cursor);
-                updateButtonState(cursor);
-            }
-        });
-    }
-
-    private void updateCursorAdapter(Cursor cursor) {
+    @Override
+    public void updateCursorAdapter(Cursor cursor) {
         if(cursor == null) return;
         if(cursorAdapter != null) {
             cursorAdapter.changeCursor(cursor);                    // 更改Adapter的Cursor
         }
     }
 
-    private void updateButtonState(Cursor cursor) {
+    @Override
+    public void updateButtonState(Cursor cursor) {
         if(cursor == null) return;
         if(cursor.getCount() == 0) {
             ibtnActionCall.setEnabled(false);
@@ -126,54 +111,75 @@ public class ContactActivity extends AppCompatActivity
     }
 
     @Override
+    public void updateName(String name) {
+        edtName.setText(name);
+    }
+
+    @Override
+    public void updatePhone(String phone) {
+        edtPhone.setText(phone);
+    }
+
+    @Override
+    public void updateEmail(String email) {
+        edtEmail.setText(email);
+    }
+
+    @Override
+    public String getName() {
+        return edtName.getText().toString().trim();
+    }
+
+    @Override
+    public String getPhone() {
+        return edtPhone.getText().toString().trim();
+    }
+
+    @Override
+    public String getEmail() {
+        return edtEmail.getText().toString().trim();
+    }
+
+    @Override
+    public void enableActionCallButton(boolean enabled) {
+        ibtnActionCall.setEnabled(enabled);
+    }
+
+    @Override
+    public void enableActionEmailButton(boolean enabled) {
+        ibtnActionEmail.setEnabled(enabled);
+    }
+
+    @Override
+    public void enableUpdateButton(boolean enabled) {
+        btnUpdate.setEnabled(enabled);
+    }
+
+    @Override
+    public void enableDeleteButton(boolean enabled) {
+        btnDelete.setEnabled(enabled);
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id){
-        contactStorageModel.moveToPosition(position);
-        edtName.setText(contactStorageModel.getContactFieldAtCurrentPosition("name"));
-        edtPhone.setText(contactStorageModel.getContactFieldAtCurrentPosition("phone"));
-        edtEmail.setText(contactStorageModel.getContactFieldAtCurrentPosition("email"));
-        ibtnActionCall.setEnabled(true);
-        ibtnActionEmail.setEnabled(true);
-        btnUpdate.setEnabled(true);
-        btnDelete.setEnabled(true);
+        contactPresenter.selectData(position);
     }
 
     public void insertOrUpdate(View v){
-        String nameStr = edtName.getText().toString().trim();
-        String phoneStr = edtPhone.getText().toString().trim();
-        String emailStr = edtEmail.getText().toString().trim();
-        if(nameStr.length()==0 ||
-                phoneStr.length()==0 ||
-                emailStr.length()==0)return;
-        if(v.getId() == R.id.btn_update) {
-            updateData(nameStr, phoneStr, emailStr, contactStorageModel.getCursor().getInt(0));
-        }else {
-            addData(nameStr, phoneStr, emailStr);
-        }
-        queryData();
+        contactPresenter.insertOrUpdate(v);
     }
 
     public void delete(View v){
-        contactStorageModel.delete(contactStorageModel.getCursor().getInt(0));
-        queryData();
+        contactPresenter.delete();
     }
 
     public void call(View v){
-        String uri ="tel: " + contactStorageModel.getContactFieldAtCurrentPosition("phone");
-        log("uri = "+uri);
-        Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-        startActivity(it);
+        contactPresenter.call();
     }
 
     public void mail(View v){
-        String uri ="mailto: " + contactStorageModel.getContactFieldAtCurrentPosition("email");
-        log("uri = "+uri);
-        Intent it = new Intent(Intent.ACTION_SENDTO, Uri.parse(uri));
-        startActivity(it);
-    }
-
-    private void log(String message){
-        Log.d(TAG, message);
+        contactPresenter.mail();
     }
 
 }

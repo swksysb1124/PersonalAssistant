@@ -172,10 +172,21 @@ public class SQLiteModel implements IContactStorageModel {
         return mCursor;
     }
 
+    @Override
+    public void release() {
+        if(mCursor != null) {
+            mCursor.close();
+        }
+        if(mDatabase != null) {
+            mDatabase.close();
+        }
+    }
+
     private void notifyIllegalStateError(String error) {
         String errorMessage;
         errorMessage = (error == null)?"Some object not initialized yet":error;
         Log.e(TAG, errorMessage);
         throw new IllegalStateException(errorMessage);
     }
+
 }

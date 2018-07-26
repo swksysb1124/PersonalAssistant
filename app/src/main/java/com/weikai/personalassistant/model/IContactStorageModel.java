@@ -21,6 +21,9 @@ public interface IContactStorageModel {
     int getContactCount();
     Uri getContactInfo(int type);
     Cursor getCursor();
+    void release();
+
+
     public interface OnAllDataUpdateCallback {
         void onUpdate(List<Contact> contacts);
     }
