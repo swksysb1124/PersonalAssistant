@@ -19,4 +19,5 @@ public interface ContactView {
     void enableActionEmailButton(boolean enabled);
     void enableUpdateButton(boolean enabled);
     void enableDeleteButton(boolean enabled);
+    void showToast(String message);
 }

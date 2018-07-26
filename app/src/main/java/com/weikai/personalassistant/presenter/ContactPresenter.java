@@ -66,9 +66,10 @@ public class ContactPresenter {
         String nameStr = mContactView.getName();
         String phoneStr = mContactView.getPhone();
         String emailStr = mContactView.getEmail();
-        if(nameStr.length()==0 ||
-                phoneStr.length()==0 ||
-                emailStr.length()==0)return;
+        if(nameStr.length()==0 || phoneStr.length()==0 || emailStr.length()==0) {
+            mContactView.showToast("No Contact Information");
+            return;
+        }
         if(v.getId() == R.id.btn_update) {
             updateData(nameStr, phoneStr, emailStr, mContactStorageModel.getCursor().getInt(0));
         }else {

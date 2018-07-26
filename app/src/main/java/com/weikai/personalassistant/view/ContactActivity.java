@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.weikai.personalassistant.R;
 import com.weikai.personalassistant.model.SQLiteModel;
@@ -20,8 +21,8 @@ import com.weikai.personalassistant.presenter.ContactPresenter;
 public class ContactActivity extends AppCompatActivity
         implements AdapterView.OnItemClickListener, ContactView{
 
-    private ContactPresenter contactPresenter;
-    private SimpleCursorAdapter cursorAdapter;
+    private ContactPresenter mContactPresenter;
+    private SimpleCursorAdapter mCursorAdapter;
     private EditText edtName, edtPhone, edtEmail;	//用來輸入姓名，電話，Email欄位
     private Button btnInsert, btnUpdate, btnDelete;
     private ImageButton ibtnActionCall;
@@ -31,7 +32,7 @@ public class ContactActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        contactPresenter = new ContactPresenter(this, this);
+        mContactPresenter = new ContactPresenter(this, this);
         initViews();
         initCursorAdapter();
         initContactListView();
@@ -40,14 +41,14 @@ public class ContactActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        contactPresenter.release();
-        contactPresenter = null;
+        mContactPresenter.release();
+        mContactPresenter = null;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        contactPresenter.queryData();
+        mContactPresenter.queryData();
     }
 
     private void initViews() {
@@ -63,9 +64,9 @@ public class ContactActivity extends AppCompatActivity
 
 
     private void initCursorAdapter() {
-        cursorAdapter = new SimpleCursorAdapter(this,
+        mCursorAdapter = new SimpleCursorAdapter(this,
                 R.layout.contact_list_item,                                     // 自訂的layout
-                contactPresenter.getCursor(),			                    // Cursor物件
+                mContactPresenter.getCursor(),			                    // Cursor物件
                 SQLiteModel.TABLE_FIELD_NAMES,				                    // 欄位名稱陣列
                 new int[] {R.id.txt_name, R.id.txt_phone, R.id.txt_email},	    // TextView 資源ID
                 0);
@@ -73,7 +74,7 @@ public class ContactActivity extends AppCompatActivity
 
     private void initContactListView() {
         ListView lvContact = (ListView)findViewById(R.id.lv);
-        lvContact.setAdapter(cursorAdapter);						// 設定Adapter
+        lvContact.setAdapter(mCursorAdapter);						// 設定Adapter
         lvContact.setOnItemClickListener(this);			// 設定按下事件的監聽器
     }
 
@@ -89,8 +90,8 @@ public class ContactActivity extends AppCompatActivity
     @Override
     public void updateCursorAdapter(Cursor cursor) {
         if(cursor == null) return;
-        if(cursorAdapter != null) {
-            cursorAdapter.changeCursor(cursor);                    // 更改Adapter的Cursor
+        if(mCursorAdapter != null) {
+            mCursorAdapter.changeCursor(cursor);                    // 更改Adapter的Cursor
         }
     }
 
@@ -161,25 +162,30 @@ public class ContactActivity extends AppCompatActivity
     }
 
     @Override
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id){
-        contactPresenter.selectData(position);
+        mContactPresenter.selectData(position);
     }
 
     public void insertOrUpdate(View v){
-        contactPresenter.insertOrUpdate(v);
+        mContactPresenter.insertOrUpdate(v);
     }
 
     public void delete(View v){
-        contactPresenter.delete();
+        mContactPresenter.delete();
     }
 
     public void call(View v){
-        contactPresenter.call();
+        mContactPresenter.call();
     }
 
     public void mail(View v){
-        contactPresenter.mail();
+        mContactPresenter.mail();
     }
 
 }
